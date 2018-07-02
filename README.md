@@ -28,9 +28,7 @@
 Install via Package managers such as [npm][npm] or [yarn][yarn]
 
 ```bash
-npm install ngx-editor --save
-# or
-yarn add ngx-editor
+npm install https://github.com/pareshgami/angular-editor-2 --save
 ```
 
 ### Usage
