@@ -95,9 +95,7 @@ var CommandExecutorService = /** @class */ (function () {
             return;
         }
         if (command === 'removeBlockquote') {
-            console.log('98');
             // document.execCommand('formatBlock', false, 'div');
-            
             document.execCommand('outdent', false, undefined);
             return;
         }

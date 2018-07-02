@@ -98,8 +98,8 @@ class CommandExecutorService {
             return;
         }
         if (command === 'removeBlockquote') {
-            console.log('101');
-            document.execCommand('formatBlock', false, 'div');
+            // document.execCommand('formatBlock', false, 'div');
+            document.execCommand('outdent', false, undefined);
             return;
         }
         document.execCommand(command, false, null);
