@@ -25,7 +25,7 @@
 
 ### Installation
 
-Install via Package managers such as [npm][npm] or [yarn][yarn]
+Install via Package using below command
 
 ```bash
 npm install https://github.com/pareshgami/angular-editor-2 --save
