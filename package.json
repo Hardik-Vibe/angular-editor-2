@@ -1,42 +1,32 @@
 {
-  "_from": "ngx-editor",
-  "_id": "ngx-editor@3.3.0",
-  "_inBundle": false,
-  "_integrity": "sha512-JWbsuhtmpAezpgCtau6sG40wh6DPqPQrRRXi1sWO7bowgAvTsY3pA/OFjveUpKRsLLv14wECFwap73tttj0zaQ==",
-  "_location": "/ngx-editor",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "ngx-editor",
-    "name": "ngx-editor",
-    "escapedName": "ngx-editor",
-    "rawSpec": "",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
+  "name": "ngx-editor",
+  "version": "3.3.0",
+  "description": "WYSIWYG Editor for Angular Applications",
+  "license": "MIT",
+  "keywords": [
+    "angular-editor",
+    "angular-wysiwyg-editor",
+    "wysiwyg-editor",
+    "ngx-editor",
+    "angular2-wysiwyg-editor",
+    "angular4-wysiwyg-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ngx-editor/-/ngx-editor-3.3.0.tgz",
-  "_shasum": "f0223b647b79825dec083c0232b0d3cea06daecf",
-  "_spec": "ngx-editor",
-  "_where": "D:\\Learning\\angular\\ng2-editor-sample\\myapp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sibiraj-S/ngx-editor.git"
+  },
   "bugs": {
     "url": "https://github.com/Sibiraj-S/ngx-editor/issues"
   },
-  "bundleDependencies": false,
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-conventional-changelog"
-    }
+  "homepage": "https://github.com/Sibiraj-S/ngx-editor",
+  "peerDependencies": {
+    "@angular/common": "^5.2.0",
+    "@angular/core": "^5.2.0",
+    "@angular/forms": "^5.2.0",
+    "font-awesome": "^4.7.0",
+    "ngx-bootstrap": "^2.0.3",
+    "rxjs": "^5.5.6"
   },
-  "dependencies": {
-    "tslib": "^1.7.1"
-  },
-  "deprecated": false,
-  "description": "WYSIWYG Editor for Angular Applications",
   "devDependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/cli": "~1.7.4",
@@ -78,33 +68,17 @@
     "typescript": "~2.5.3",
     "zone.js": "^0.8.19"
   },
-  "es2015": "esm2015/ngx-editor.js",
-  "homepage": "https://github.com/Sibiraj-S/ngx-editor",
-  "keywords": [
-    "angular-editor",
-    "angular-wysiwyg-editor",
-    "wysiwyg-editor",
-    "ngx-editor",
-    "angular2-wysiwyg-editor",
-    "angular4-wysiwyg-editor"
-  ],
-  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
   "main": "bundles/ngx-editor.umd.js",
-  "metadata": "ngx-editor.metadata.json",
   "module": "esm5/ngx-editor.js",
-  "name": "ngx-editor",
-  "peerDependencies": {
-    "@angular/common": "^5.2.0",
-    "@angular/core": "^5.2.0",
-    "@angular/forms": "^5.2.0",
-    "font-awesome": "^4.7.0",
-    "ngx-bootstrap": "^2.0.3",
-    "rxjs": "^5.5.6"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Sibiraj-S/ngx-editor.git"
-  },
+  "es2015": "esm2015/ngx-editor.js",
   "typings": "ngx-editor.d.ts",
-  "version": "3.3.0"
+  "metadata": "ngx-editor.metadata.json",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  }
 }
