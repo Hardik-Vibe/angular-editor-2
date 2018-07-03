@@ -42,9 +42,23 @@ export declare class NgxEditorToolbarComponent implements OnInit {
     /**
      * Emits an event when a toolbar button is clicked
      */
-    activeOption: string;
+    activeButtonArray: {
+        bold: boolean;
+        italic: boolean;
+        underLine: boolean;
+        superScript: boolean;
+        subScript: boolean;
+        orderedList: boolean;
+        unOrderedList: boolean;
+        blockquote: boolean;
+        removeBlockquote: boolean;
+        strikeThrough: boolean;
+    };
+    isMoreShow: boolean;
+    moreButtonText: string;
     execute: EventEmitter<string>;
     constructor(_popOverConfig: PopoverConfig, _formBuilder: FormBuilder, _messageService: MessageService, _commandExecutorService: CommandExecutorService);
+    isShownAll(): void;
     /**
      * enable or diable toolbar based on configuration
      *

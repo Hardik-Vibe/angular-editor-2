@@ -508,22 +508,39 @@ class NgxEditorToolbarComponent {
         this.fontSize = '';
         this.hexColor = '';
         this.isImageUploader = false;
-        this.activeOption = '';
+        this.activeButtonArray = {
+            bold: false,
+            italic: false,
+            underLine: false,
+            superScript: false,
+            subScript: false,
+            orderedList: false,
+            unOrderedList: false,
+            blockquote: false,
+            removeBlockquote: false,
+            strikeThrough: false
+        };
+        this.isMoreShow = false;
+        this.moreButtonText = 'Show More';
         this.execute = new EventEmitter();
         this._popOverConfig.outsideClick = true;
         this._popOverConfig.placement = 'bottom';
         this._popOverConfig.container = 'body';
     }
+    isShownAll() {
+        this.isMoreShow = !this.isMoreShow;
+        if (this.isMoreShow) {
+            this.moreButtonText = 'Show Less';
+        }
+        else {
+            this.moreButtonText = 'Show More';
+        }
+    }
     canEnableToolbarOptions(value) {
         return canEnableToolbarOptions(value, this.config['toolbar']);
     }
     triggerCommand(command) {
-        if (this.activeOption == command) {
-            this.activeOption = '';
-        }
-        else {
-            this.activeOption = command;
-        }
+        this.activeButtonArray[command] = !this.activeButtonArray[command];
         this.execute.emit(command);
     }
     buildUrlForm() {
@@ -655,140 +672,131 @@ NgxEditorToolbarComponent.decorators = [
                 selector: 'app-ngx-editor-toolbar',
                 template: `<div class="ngx-toolbar" *ngIf="config['showToolbar']">
   <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='bold'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('bold')" (click)="triggerCommand('bold')"
+    <button [ngClass]="activeButtonArray['bold']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('bold')" (click)="triggerCommand('bold')"
       title="Bold" [disabled]="!config['enableToolbar']">
       <i class="fa fa-bold" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='italic'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('italic')" (click)="triggerCommand('italic')"
+    <button [ngClass]="activeButtonArray['italic']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('italic')" (click)="triggerCommand('italic')"
       title="Italic" [disabled]="!config['enableToolbar']">
       <i class="fa fa-italic" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='underline'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('underline')" (click)="triggerCommand('underline')"
+    <button [ngClass]="activeButtonArray['underline']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('underline')" (click)="triggerCommand('underline')"
       title="Underline" [disabled]="!config['enableToolbar']">
       <i class="fa fa-underline" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='strikeThrough'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('strikeThrough')" (click)="triggerCommand('strikeThrough')"
+    <button [ngClass]="activeButtonArray['strikeThrough']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('strikeThrough')" (click)="triggerCommand('strikeThrough')"
       title="Strikethrough" [disabled]="!config['enableToolbar']">
       <i class="fa fa-strikethrough" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='superscript'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('superscript')" (click)="triggerCommand('superscript')"
+    <button [ngClass]="activeButtonArray['superscript']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('superscript')" (click)="triggerCommand('superscript')"
       title="Superscript" [disabled]="!config['enableToolbar']">
       <i class="fa fa-superscript" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='subscript'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('subscript')" (click)="triggerCommand('subscript')"
+    <button [ngClass]="activeButtonArray['subscript']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('subscript') && isMoreShow" (click)="triggerCommand('subscript')"
       title="Subscript" [disabled]="!config['enableToolbar']">
       <i class="fa fa-subscript" aria-hidden="true"></i>
     </button>
-  </div>
-  <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='fontName'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('fontName')" (click)="fontName = ''" title="Font Family"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('fontName') && isMoreShow" (click)="fontName = ''" title="Font Family"
       [popover]="fontNameTemplate" #fontNamePopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-font" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='fontSize'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('fontSize')" (click)="fontSize = ''" title="Font Size"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('fontSize') && isMoreShow" (click)="fontSize = ''" title="Font Size"
       [popover]="fontSizeTemplate" #fontSizePopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-text-height" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='color'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('color')" (click)="hexColor = ''" title="Color Picker"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('color') && isMoreShow" (click)="hexColor = ''" title="Color Picker"
       [popover]="insertColorTemplate" #colorPopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-tint" aria-hidden="true"></i>
     </button>
-  </div>
-  <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='justifyLeft'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyLeft')" (click)="triggerCommand('justifyLeft')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyLeft') && isMoreShow" (click)="triggerCommand('justifyLeft')"
       title="Justify Left" [disabled]="!config['enableToolbar']">
       <i class="fa fa-align-left" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='justifyCenter'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyCenter')" (click)="triggerCommand('justifyCenter')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyCenter') && isMoreShow" (click)="triggerCommand('justifyCenter')"
       title="Justify Center" [disabled]="!config['enableToolbar']">
       <i class="fa fa-align-center" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='justifyRight'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyRight')" (click)="triggerCommand('justifyRight')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyRight') && isMoreShow" (click)="triggerCommand('justifyRight')"
       title="Justify Right" [disabled]="!config['enableToolbar']">
       <i class="fa fa-align-right" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='justifyFull'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyFull')" (click)="triggerCommand('justifyFull')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('justifyFull') && isMoreShow" (click)="triggerCommand('justifyFull')"
       title="Justify" [disabled]="!config['enableToolbar']">
       <i class="fa fa-align-justify" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='indent'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('indent')" (click)="triggerCommand('indent')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('indent') && isMoreShow" (click)="triggerCommand('indent')"
       title="Indent" [disabled]="!config['enableToolbar']">
       <i class="fa fa-indent" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='outdent'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('outdent')" (click)="triggerCommand('outdent')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('outdent') && isMoreShow" (click)="triggerCommand('outdent')"
       title="Outdent" [disabled]="!config['enableToolbar']">
       <i class="fa fa-outdent" aria-hidden="true"></i>
     </button>
-  </div>
-  <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='cut'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('cut')" (click)="triggerCommand('cut')" title="Cut"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('cut') && isMoreShow" (click)="triggerCommand('cut')" title="Cut"
       [disabled]="!config['enableToolbar']">
       <i class="fa fa-scissors" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='copy'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('copy')" (click)="triggerCommand('copy')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('copy') && isMoreShow" (click)="triggerCommand('copy')"
       title="Copy" [disabled]="!config['enableToolbar']">
       <i class="fa fa-files-o" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='delete'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('delete')" (click)="triggerCommand('delete')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('delete')" (click)="triggerCommand('delete')"
       title="Delete" [disabled]="!config['enableToolbar']">
       <i class="fa fa-trash" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='removeFormat'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeFormat')" (click)="triggerCommand('removeFormat')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeFormat') && isMoreShow" (click)="triggerCommand('removeFormat')"
       title="Clear Formatting" [disabled]="!config['enableToolbar']">
       <i class="fa fa-eraser" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='undo'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('undo')" (click)="triggerCommand('undo')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('undo') && isMoreShow" (click)="triggerCommand('undo')"
       title="Undo" [disabled]="!config['enableToolbar']">
       <i class="fa fa-undo" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='redo'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('redo')" (click)="triggerCommand('redo')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('redo') && isMoreShow" (click)="triggerCommand('redo')"
       title="Redo" [disabled]="!config['enableToolbar']">
       <i class="fa fa-repeat" aria-hidden="true"></i>
     </button>
-  </div>
-  <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='insertParagraph'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('paragraph')" (click)="triggerCommand('insertParagraph')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('paragraph') && isMoreShow" (click)="triggerCommand('insertParagraph')"
       title="Paragraph" [disabled]="!config['enableToolbar']">
       <i class="fa fa-paragraph" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='blockquote'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('blockquote')" (click)="triggerCommand('blockquote')"
+    <button [ngClass]="activeButtonArray['blockquote']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('blockquote') && isMoreShow" (click)="triggerCommand('blockquote')"
       title="Blockquote" [disabled]="!config['enableToolbar']">
       <i class="fa fa-quote-left" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='removeBlockquote'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeBlockquote')" (click)="triggerCommand('removeBlockquote')"
+    <button [ngClass]="activeButtonArray['removeBlockquote']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeBlockquote') && isMoreShow" (click)="triggerCommand('removeBlockquote')"
       title="Remove Blockquote" [disabled]="!config['enableToolbar']">
       <i class="fa fa-quote-right" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='insertHorizontalRule'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('horizontalLine')" (click)="triggerCommand('insertHorizontalRule')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('horizontalLine') && isMoreShow" (click)="triggerCommand('insertHorizontalRule')"
       title="Horizontal Line" [disabled]="!config['enableToolbar']">
       <i class="fa fa-minus" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='insertUnorderedList'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unorderedList')" (click)="triggerCommand('insertUnorderedList')"
+    <button [ngClass]="activeButtonArray['insertUnorderedList']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unorderedList') && isMoreShow" (click)="triggerCommand('insertUnorderedList')"
       title="Unordered List" [disabled]="!config['enableToolbar']">
       <i class="fa fa-list-ul" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='insertOrderedList'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('orderedList')" (click)="triggerCommand('insertOrderedList')"
+    <button [ngClass]="activeButtonArray['insertOrderedList']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('orderedList') && isMoreShow" (click)="triggerCommand('insertOrderedList')"
       title="Ordered List" [disabled]="!config['enableToolbar']">
       <i class="fa fa-list-ol" aria-hidden="true"></i>
     </button>
-  </div>
-  <div class="ngx-toolbar-set">
-    <button [ngClass]="{active:activeOption==='link'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('link')" (click)="buildUrlForm()" [popover]="insertLinkTemplate"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('link') && isMoreShow" (click)="buildUrlForm()" [popover]="insertLinkTemplate"
       title="Insert Link" #urlPopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-link" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='unlink'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unlink')" (click)="triggerCommand('unlink')"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unlink') && isMoreShow" (click)="triggerCommand('unlink')"
       title="Unlink" [disabled]="!config['enableToolbar']">
       <i class="fa fa-chain-broken" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='image'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('image')" (click)="buildImageForm()" title="Insert Image"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('image') && isMoreShow" (click)="buildImageForm()" title="Insert Image"
       [popover]="insertImageTemplate" #imagePopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-picture-o" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="{active:activeOption==='video'}" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('video')" (click)="buildVideoForm()" title="Insert Video"
+    <button type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('video') && isMoreShow" (click)="buildVideoForm()" title="Insert Video"
       [popover]="insertVideoTemplate" #videoPopover="bs-popover" containerClass="ngxePopover" [disabled]="!config['enableToolbar']">
       <i class="fa fa-youtube-play" aria-hidden="true"></i>
     </button>
+    <button type="button" class="ngx-editor-button" [title]="moreButtonText" (click)="isShownAll()"><i [ngClass]="isMoreShow?'fa fa-caret-up':'fa fa-caret-down'"></i></button>
   </div>
 </div>
 <!-- URL Popover template -->
