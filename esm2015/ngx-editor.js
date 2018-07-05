@@ -511,14 +511,14 @@ class NgxEditorToolbarComponent {
         this.activeButtonArray = {
             bold: false,
             italic: false,
-            underLine: false,
-            superScript: false,
-            subScript: false,
-            orderedList: false,
-            unOrderedList: false,
+            underline: false,
+            superscript: false,
+            subscript: false,
+            orderedlist: false,
+            unorderedlist: false,
             blockquote: false,
-            removeBlockquote: false,
-            strikeThrough: false
+            removeblockquote: false,
+            strikethrough: false
         };
         this.isMoreShow = false;
         this.moreButtonText = 'Show More';
@@ -540,8 +540,19 @@ class NgxEditorToolbarComponent {
         return canEnableToolbarOptions(value, this.config['toolbar']);
     }
     triggerCommand(command) {
-        this.activeButtonArray[command] = !this.activeButtonArray[command];
+        if (command === 'removeFormat') {
+            this.clearActiveButtonWhileErase();
+        }
+        else {
+            this.activeButtonArray[command.toLowerCase()] = !this.activeButtonArray[command.toLowerCase()];
+        }
         this.execute.emit(command);
+    }
+    clearActiveButtonWhileErase() {
+        let                  formattedButton = ['bold', 'italic', 'underline', 'superscript', 'subscript', 'strikethrough'];
+        formattedButton.forEach(btn => {
+            this.activeButtonArray[btn] = false;
+        });
     }
     buildUrlForm() {
         this.urlForm = this._formBuilder.group({
@@ -684,7 +695,7 @@ NgxEditorToolbarComponent.decorators = [
       title="Underline" [disabled]="!config['enableToolbar']">
       <i class="fa fa-underline" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="activeButtonArray['strikeThrough']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('strikeThrough')" (click)="triggerCommand('strikeThrough')"
+    <button [ngClass]="activeButtonArray['strikethrough']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('strikeThrough')" (click)="triggerCommand('strikeThrough')"
       title="Strikethrough" [disabled]="!config['enableToolbar']">
       <i class="fa fa-strikethrough" aria-hidden="true"></i>
     </button>
@@ -764,7 +775,7 @@ NgxEditorToolbarComponent.decorators = [
       title="Blockquote" [disabled]="!config['enableToolbar']">
       <i class="fa fa-quote-left" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="activeButtonArray['removeBlockquote']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeBlockquote') && isMoreShow" (click)="triggerCommand('removeBlockquote')"
+    <button [ngClass]="activeButtonArray['removeblockquote']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('removeBlockquote') && isMoreShow" (click)="triggerCommand('removeBlockquote')"
       title="Remove Blockquote" [disabled]="!config['enableToolbar']">
       <i class="fa fa-quote-right" aria-hidden="true"></i>
     </button>
@@ -772,11 +783,11 @@ NgxEditorToolbarComponent.decorators = [
       title="Horizontal Line" [disabled]="!config['enableToolbar']">
       <i class="fa fa-minus" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="activeButtonArray['insertUnorderedList']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unorderedList') && isMoreShow" (click)="triggerCommand('insertUnorderedList')"
+    <button [ngClass]="activeButtonArray['insertunorderedlist']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('unorderedList') && isMoreShow" (click)="triggerCommand('insertUnorderedList')"
       title="Unordered List" [disabled]="!config['enableToolbar']">
       <i class="fa fa-list-ul" aria-hidden="true"></i>
     </button>
-    <button [ngClass]="activeButtonArray['insertOrderedList']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('orderedList') && isMoreShow" (click)="triggerCommand('insertOrderedList')"
+    <button [ngClass]="activeButtonArray['insertorderedlist']==true?'active':''" type="button" class="ngx-editor-button" *ngIf="canEnableToolbarOptions('orderedList') && isMoreShow" (click)="triggerCommand('insertOrderedList')"
       title="Ordered List" [disabled]="!config['enableToolbar']">
       <i class="fa fa-list-ol" aria-hidden="true"></i>
     </button>

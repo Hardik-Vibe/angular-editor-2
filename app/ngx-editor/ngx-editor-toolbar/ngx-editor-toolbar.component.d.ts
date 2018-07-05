@@ -45,14 +45,14 @@ export declare class NgxEditorToolbarComponent implements OnInit {
     activeButtonArray: {
         bold: boolean;
         italic: boolean;
-        underLine: boolean;
-        superScript: boolean;
-        subScript: boolean;
-        orderedList: boolean;
-        unOrderedList: boolean;
+        underline: boolean;
+        superscript: boolean;
+        subscript: boolean;
+        orderedlist: boolean;
+        unorderedlist: boolean;
         blockquote: boolean;
-        removeBlockquote: boolean;
-        strikeThrough: boolean;
+        removeblockquote: boolean;
+        strikethrough: boolean;
     };
     isMoreShow: boolean;
     moreButtonText: string;
@@ -71,6 +71,7 @@ export declare class NgxEditorToolbarComponent implements OnInit {
      * @param command name of the command to be executed
      */
     triggerCommand(command: string): void;
+    clearActiveButtonWhileErase(): void;
     /**
      * create URL insert form
      */
