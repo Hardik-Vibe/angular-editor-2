@@ -29,3 +29,9 @@ export declare function saveSelection(): any;
  * @param range saved selection when the editor is focussed out
  */
 export declare function restoreSelection(range: any): boolean;
+/**
+ * restore toolbar formatting when the user moves the cursor
+ *
+ * @param selection current selection when the user moves the cursor
+ */
+export declare function checkFormatting(selection: any): any;

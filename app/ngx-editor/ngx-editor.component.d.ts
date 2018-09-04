@@ -2,6 +2,7 @@ import { OnInit, EventEmitter, Renderer2 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { CommandExecutorService } from './common/services/command-executor.service';
 import { MessageService } from './common/services/message.service';
+import { NgxEditorToolbarComponent } from './ngx-editor-toolbar/ngx-editor-toolbar.component';
 export declare class NgxEditorComponent implements OnInit, ControlValueAccessor {
     private _messageService;
     private _commandExecutor;
@@ -74,6 +75,7 @@ export declare class NgxEditorComponent implements OnInit, ControlValueAccessor 
     focus: EventEmitter<string>;
     textArea: any;
     ngxWrapper: any;
+    ngxToolbar: NgxEditorToolbarComponent;
     Utils: any;
     private onChange;
     private onTouched;
@@ -95,6 +97,7 @@ export declare class NgxEditorComponent implements OnInit, ControlValueAccessor 
      */
     onContentChange(html: string): void;
     onTextAreaBlur(): void;
+    onSelectionChange(): void;
     /**
      * resizing text area
      *

@@ -1,8 +1,8 @@
-import { Injectable, Component, Input, Output, ViewChild, EventEmitter, Renderer2, forwardRef, NgModule } from '@angular/core';
+import { Injectable, Component, Input, Output, EventEmitter, ViewChild, Renderer2, forwardRef, NgModule } from '@angular/core';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
-import { NG_VALUE_ACCESSOR, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, NG_VALUE_ACCESSOR, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PopoverConfig, PopoverModule } from 'ngx-bootstrap';
 import { CommonModule } from '@angular/common';
 
@@ -70,12 +70,73 @@ function restoreSelection(range) {
         return false;
     }
 }
+function checkFormatting(selection) {
+    var obj = {
+        bold: false,
+        italic: false,
+        underline: false,
+        superscript: false,
+        subscript: false,
+        orderedlist: false,
+        unorderedlist: false,
+        blockquote: false,
+        removeblockquote: false,
+        strikethrough: false
+    };
+    if (selection && selection.focusNode) {
+        if (selection.focusNode.parentNode && selection.focusNode.parentNode.className == 'ngx-editor-textarea') {
+            return obj;
+        }
+        else {
+            var node = selection.focusNode.parentNode;
+            do {
+                switch (node.tagName.toLowerCase()) {
+                    case 'b':
+                        obj.bold = true;
+                        break;
+                    case 'i':
+                        obj.italic = true;
+                        break;
+                    case 'u':
+                        obj.underline = true;
+                        break;
+                    case 'strike':
+                        obj.strikethrough = true;
+                        break;
+                    case 'sup':
+                        obj.superscript = true;
+                        break;
+                    case 'sub':
+                        obj.subscript = true;
+                        break;
+                    case 'ol':
+                        obj.orderedlist = true;
+                        break;
+                    case 'ul':
+                        obj.underline = true;
+                        break;
+                    case 'blockquote':
+                        obj.blockquote = true;
+                        break;
+                }
+                if (node.tagName.toLowerCase() == 'b') {
+                    obj.bold = true;
+                }
+                if (node && node.parentNode) {
+                    node = node.parentNode;
+                }
+            } while (node.className != 'ngx-editor-textarea');
+            return obj;
+        }
+    }
+}
 var Utils = Object.freeze({
     canEnableToolbarOptions: canEnableToolbarOptions,
     getEditorConfiguration: getEditorConfiguration,
     canResize: canResize,
     saveSelection: saveSelection,
-    restoreSelection: restoreSelection
+    restoreSelection: restoreSelection,
+    checkFormatting: checkFormatting
 });
 var CommandExecutorService = /** @class */ (function () {
     function CommandExecutorService(_http) {
@@ -342,144 +403,6 @@ var ngxEditorConfig = {
         ['link', 'unlink', 'image', 'video']
     ]
 };
-var NgxEditorComponent = /** @class */ (function () {
-    function NgxEditorComponent(_messageService, _commandExecutor, _renderer) {
-        this._messageService = _messageService;
-        this._commandExecutor = _commandExecutor;
-        this._renderer = _renderer;
-        this.resizer = 'stack';
-        this.config = ngxEditorConfig;
-        this.blur = new EventEmitter();
-        this.focus = new EventEmitter();
-        this.Utils = Utils;
-    }
-    NgxEditorComponent.prototype.onTextAreaFocus = function () {
-        this.focus.emit('focus');
-        return;
-    };
-    NgxEditorComponent.prototype.onEditorFocus = function () {
-        this.textArea.nativeElement.focus();
-    };
-    NgxEditorComponent.prototype.onContentChange = function (html) {
-        if (typeof this.onChange === 'function') {
-            this.onChange(html);
-            this.togglePlaceholder(html);
-        }
-        return;
-    };
-    NgxEditorComponent.prototype.onTextAreaBlur = function () {
-        this._commandExecutor.savedSelection = saveSelection();
-        if (typeof this.onTouched === 'function') {
-            this.onTouched();
-        }
-        this.blur.emit('blur');
-        return;
-    };
-    NgxEditorComponent.prototype.resizeTextArea = function (offsetY) {
-        var newHeight = parseInt(this.height, 10);
-        newHeight += offsetY;
-        this.height = newHeight + 'px';
-        this.textArea.nativeElement.style.height = this.height;
-        return;
-    };
-    NgxEditorComponent.prototype.executeCommand = function (commandName) {
-        try {
-            this._commandExecutor.execute(commandName);
-        }
-        catch (error) {
-            this._messageService.sendMessage(error.message);
-        }
-        return;
-    };
-    NgxEditorComponent.prototype.writeValue = function (value) {
-        this.togglePlaceholder(value);
-        if (value === null || value === undefined || value === '' || value === '<br>') {
-            value = null;
-        }
-        this.refreshView(value);
-    };
-    NgxEditorComponent.prototype.registerOnChange = function (fn) {
-        this.onChange = fn;
-    };
-    NgxEditorComponent.prototype.registerOnTouched = function (fn) {
-        this.onTouched = fn;
-    };
-    NgxEditorComponent.prototype.refreshView = function (value) {
-        var normalizedValue = value === null ? '' : value;
-        this._renderer.setProperty(this.textArea.nativeElement, 'innerHTML', normalizedValue);
-        return;
-    };
-    NgxEditorComponent.prototype.togglePlaceholder = function (value) {
-        if (!value || value === '<br>' || value === '') {
-            this._renderer.addClass(this.ngxWrapper.nativeElement, 'show-placeholder');
-        }
-        else {
-            this._renderer.removeClass(this.ngxWrapper.nativeElement, 'show-placeholder');
-        }
-        return;
-    };
-    NgxEditorComponent.prototype.getCollectiveParams = function () {
-        return {
-            editable: this.editable,
-            spellcheck: this.spellcheck,
-            placeholder: this.placeholder,
-            translate: this.translate,
-            height: this.height,
-            minHeight: this.minHeight,
-            width: this.width,
-            minWidth: this.minWidth,
-            enableToolbar: this.enableToolbar,
-            showToolbar: this.showToolbar,
-            imageEndPoint: this.imageEndPoint,
-            toolbar: this.toolbar
-        };
-    };
-    NgxEditorComponent.prototype.ngOnInit = function () {
-        this.config = this.Utils.getEditorConfiguration(this.config, ngxEditorConfig, this.getCollectiveParams());
-        this.height = this.height || this.textArea.nativeElement.offsetHeight;
-        this.executeCommand('enableObjectResizing');
-    };
-    return NgxEditorComponent;
-}());
-NgxEditorComponent.decorators = [
-    { type: Component, args: [{
-                selector: 'app-ngx-editor',
-                template: "<div class=\"ngx-editor\" id=\"ngxEditor\" [style.width]=\"config['width']\" [style.minWidth]=\"config['minWidth']\" tabindex=\"0\"\n  (focus)=\"onEditorFocus()\">\n  <app-ngx-editor-toolbar [config]=\"config\" (execute)=\"executeCommand($event)\"></app-ngx-editor-toolbar>\n  <!-- text area -->\n  <div class=\"ngx-wrapper\" #ngxWrapper>\n    <div class=\"ngx-editor-textarea\" [attr.contenteditable]=\"config['editable']\" (input)=\"onContentChange($event.target.innerHTML)\"\n      [attr.translate]=\"config['translate']\" [attr.spellcheck]=\"config['spellcheck']\" [style.height]=\"config['height']\" [style.minHeight]=\"config['minHeight']\"\n      [style.resize]=\"Utils?.canResize(resizer)\" (focus)=\"onTextAreaFocus()\" (blur)=\"onTextAreaBlur()\" #ngxTextArea></div>\n    <span class=\"ngx-editor-placeholder\">{{ placeholder || config['placeholder'] }}</span>\n  </div>\n</div>\n",
-                styles: [".ngx-editor{position:relative}.ngx-editor ::ng-deep [contenteditable=true]:empty:before{content:normal;display:block;color:#868e96;opacity:1}.ngx-editor .ngx-wrapper{position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea{min-height:5rem;padding:.5rem .8rem 1rem;border:1px solid #ddd;background-color:transparent;overflow-x:hidden;overflow-y:auto;z-index:2;position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea.focus,.ngx-editor .ngx-wrapper .ngx-editor-textarea:focus{outline:0}.ngx-editor .ngx-wrapper .ngx-editor-textarea ::ng-deep blockquote{margin-left:1rem;border-left:.2em solid #dfe2e5;padding-left:.5rem}.ngx-editor .ngx-wrapper ::ng-deep p{margin-bottom:0}.ngx-editor .ngx-wrapper .ngx-editor-placeholder{display:none;position:absolute;top:0;padding:.5rem .8rem 1rem .9rem;z-index:1;color:#6c757d;opacity:1}.ngx-editor .ngx-wrapper.show-placeholder .ngx-editor-placeholder{display:block}"],
-                providers: [
-                    {
-                        provide: NG_VALUE_ACCESSOR,
-                        useExisting: forwardRef(function () { return NgxEditorComponent; }),
-                        multi: true
-                    }
-                ]
-            },] },
-];
-NgxEditorComponent.ctorParameters = function () { return [
-    { type: MessageService, },
-    { type: CommandExecutorService, },
-    { type: Renderer2, },
-]; };
-NgxEditorComponent.propDecorators = {
-    "editable": [{ type: Input },],
-    "spellcheck": [{ type: Input },],
-    "placeholder": [{ type: Input },],
-    "translate": [{ type: Input },],
-    "height": [{ type: Input },],
-    "minHeight": [{ type: Input },],
-    "width": [{ type: Input },],
-    "minWidth": [{ type: Input },],
-    "toolbar": [{ type: Input },],
-    "resizer": [{ type: Input },],
-    "config": [{ type: Input },],
-    "showToolbar": [{ type: Input },],
-    "enableToolbar": [{ type: Input },],
-    "imageEndPoint": [{ type: Input },],
-    "blur": [{ type: Output },],
-    "focus": [{ type: Output },],
-    "textArea": [{ type: ViewChild, args: ['ngxTextArea',] },],
-    "ngxWrapper": [{ type: ViewChild, args: ['ngxWrapper',] },],
-};
 var NgxEditorToolbarComponent = /** @class */ (function () {
     function NgxEditorToolbarComponent(_popOverConfig, _formBuilder, _messageService, _commandExecutorService) {
         this._popOverConfig = _popOverConfig;
@@ -689,6 +612,151 @@ NgxEditorToolbarComponent.propDecorators = {
     "fontSizePopover": [{ type: ViewChild, args: ['fontSizePopover',] },],
     "colorPopover": [{ type: ViewChild, args: ['colorPopover',] },],
     "execute": [{ type: Output },],
+};
+var NgxEditorComponent = /** @class */ (function () {
+    function NgxEditorComponent(_messageService, _commandExecutor, _renderer) {
+        this._messageService = _messageService;
+        this._commandExecutor = _commandExecutor;
+        this._renderer = _renderer;
+        this.resizer = 'stack';
+        this.config = ngxEditorConfig;
+        this.blur = new EventEmitter();
+        this.focus = new EventEmitter();
+        this.Utils = Utils;
+    }
+    NgxEditorComponent.prototype.onTextAreaFocus = function () {
+        this.focus.emit('focus');
+        return;
+    };
+    NgxEditorComponent.prototype.onEditorFocus = function () {
+        this.textArea.nativeElement.focus();
+    };
+    NgxEditorComponent.prototype.onContentChange = function (html) {
+        restoreSelection(window.getSelection().getRangeAt(0));
+        if (typeof this.onChange === 'function') {
+            this.onChange(html);
+            this.togglePlaceholder(html);
+        }
+        return;
+    };
+    NgxEditorComponent.prototype.onTextAreaBlur = function () {
+        this._commandExecutor.savedSelection = saveSelection();
+        if (typeof this.onTouched === 'function') {
+            this.onTouched();
+        }
+        this.blur.emit('blur');
+        return;
+    };
+    NgxEditorComponent.prototype.onSelectionChange = function () {
+        this._commandExecutor.savedSelection = saveSelection();
+        this.ngxToolbar.activeButtonArray = checkFormatting(window.getSelection());
+        return;
+    };
+    NgxEditorComponent.prototype.resizeTextArea = function (offsetY) {
+        var newHeight = parseInt(this.height, 10);
+        newHeight += offsetY;
+        this.height = newHeight + 'px';
+        this.textArea.nativeElement.style.height = this.height;
+        return;
+    };
+    NgxEditorComponent.prototype.executeCommand = function (commandName) {
+        try {
+            this._commandExecutor.execute(commandName);
+        }
+        catch (error) {
+            this._messageService.sendMessage(error.message);
+        }
+        return;
+    };
+    NgxEditorComponent.prototype.writeValue = function (value) {
+        this.togglePlaceholder(value);
+        if (value === null || value === undefined || value === '' || value === '<br>') {
+            value = null;
+        }
+        this.refreshView(value);
+    };
+    NgxEditorComponent.prototype.registerOnChange = function (fn) {
+        this.onChange = fn;
+    };
+    NgxEditorComponent.prototype.registerOnTouched = function (fn) {
+        this.onTouched = fn;
+    };
+    NgxEditorComponent.prototype.refreshView = function (value) {
+        var normalizedValue = value === null ? '' : value;
+        this._renderer.setProperty(this.textArea.nativeElement, 'innerHTML', normalizedValue);
+        return;
+    };
+    NgxEditorComponent.prototype.togglePlaceholder = function (value) {
+        if (!value || value === '<br>' || value === '') {
+            this._renderer.addClass(this.ngxWrapper.nativeElement, 'show-placeholder');
+        }
+        else {
+            this._renderer.removeClass(this.ngxWrapper.nativeElement, 'show-placeholder');
+        }
+        return;
+    };
+    NgxEditorComponent.prototype.getCollectiveParams = function () {
+        return {
+            editable: this.editable,
+            spellcheck: this.spellcheck,
+            placeholder: this.placeholder,
+            translate: this.translate,
+            height: this.height,
+            minHeight: this.minHeight,
+            width: this.width,
+            minWidth: this.minWidth,
+            enableToolbar: this.enableToolbar,
+            showToolbar: this.showToolbar,
+            imageEndPoint: this.imageEndPoint,
+            toolbar: this.toolbar
+        };
+    };
+    NgxEditorComponent.prototype.ngOnInit = function () {
+        this.config = this.Utils.getEditorConfiguration(this.config, ngxEditorConfig, this.getCollectiveParams());
+        this.height = this.height || this.textArea.nativeElement.offsetHeight;
+        this.executeCommand('enableObjectResizing');
+    };
+    return NgxEditorComponent;
+}());
+NgxEditorComponent.decorators = [
+    { type: Component, args: [{
+                selector: 'app-ngx-editor',
+                template: "<div class=\"ngx-editor\" id=\"ngxEditor\" [style.width]=\"config['width']\" [style.minWidth]=\"config['minWidth']\" tabindex=\"0\"\n  (focus)=\"onEditorFocus()\">\n  <app-ngx-editor-toolbar #ngxToolbar [config]=\"config\" (execute)=\"executeCommand($event)\"></app-ngx-editor-toolbar>\n  <!-- text area -->\n  <div class=\"ngx-wrapper\" #ngxWrapper>\n    <div class=\"ngx-editor-textarea\" [attr.contenteditable]=\"config['editable']\" (input)=\"onContentChange($event.target.innerHTML)\"\n      [attr.translate]=\"config['translate']\" [attr.spellcheck]=\"config['spellcheck']\" [style.height]=\"config['height']\" [style.minHeight]=\"config['minHeight']\"\n      [style.resize]=\"Utils?.canResize(resizer)\" (focus)=\"onTextAreaFocus()\" (blur)=\"onTextAreaBlur()\" #ngxTextArea (keyup)=\"onSelectionChange()\"></div>\n    <span class=\"ngx-editor-placeholder\">{{ placeholder || config['placeholder'] }}</span>\n  </div>\n</div>\n",
+                styles: [".ngx-editor{position:relative}.ngx-editor ::ng-deep [contenteditable=true]:empty:before{content:normal;display:block;color:#868e96;opacity:1}.ngx-editor .ngx-wrapper{position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea{min-height:5rem;padding:.5rem .8rem 1rem;border:1px solid #ddd;background-color:transparent;overflow-x:hidden;overflow-y:auto;z-index:2;position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea.focus,.ngx-editor .ngx-wrapper .ngx-editor-textarea:focus{outline:0}.ngx-editor .ngx-wrapper .ngx-editor-textarea ::ng-deep blockquote{margin-left:1rem;border-left:.2em solid #dfe2e5;padding-left:.5rem}.ngx-editor .ngx-wrapper ::ng-deep p{margin-bottom:0}.ngx-editor .ngx-wrapper .ngx-editor-placeholder{display:none;position:absolute;top:0;padding:.5rem .8rem 1rem .9rem;z-index:1;color:#6c757d;opacity:1}.ngx-editor .ngx-wrapper.show-placeholder .ngx-editor-placeholder{display:block}"],
+                providers: [
+                    {
+                        provide: NG_VALUE_ACCESSOR,
+                        useExisting: forwardRef(function () { return NgxEditorComponent; }),
+                        multi: true
+                    }
+                ]
+            },] },
+];
+NgxEditorComponent.ctorParameters = function () { return [
+    { type: MessageService, },
+    { type: CommandExecutorService, },
+    { type: Renderer2, },
+]; };
+NgxEditorComponent.propDecorators = {
+    "editable": [{ type: Input },],
+    "spellcheck": [{ type: Input },],
+    "placeholder": [{ type: Input },],
+    "translate": [{ type: Input },],
+    "height": [{ type: Input },],
+    "minHeight": [{ type: Input },],
+    "width": [{ type: Input },],
+    "minWidth": [{ type: Input },],
+    "toolbar": [{ type: Input },],
+    "resizer": [{ type: Input },],
+    "config": [{ type: Input },],
+    "showToolbar": [{ type: Input },],
+    "enableToolbar": [{ type: Input },],
+    "imageEndPoint": [{ type: Input },],
+    "blur": [{ type: Output },],
+    "focus": [{ type: Output },],
+    "textArea": [{ type: ViewChild, args: ['ngxTextArea',] },],
+    "ngxWrapper": [{ type: ViewChild, args: ['ngxWrapper',] },],
+    "ngxToolbar": [{ type: ViewChild, args: ['ngxToolbar',] },],
 };
 var NgxEditorModule = /** @class */ (function () {
     function NgxEditorModule() {
