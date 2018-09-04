@@ -84,48 +84,47 @@ function checkFormatting(selection) {
         strikethrough: false
     };
     if (selection && selection.focusNode) {
-        if (selection.focusNode.parentNode && selection.focusNode.parentNode.className == 'ngx-editor-textarea') {
+        if (selection.focusNode.className == 'ngx-editor-textarea' || (selection.focusNode.parentNode && selection.focusNode.parentNode.className == 'ngx-editor-textarea')) {
             return obj;
         }
         else {
             var                  node = selection.focusNode.parentNode;
-            do {
-                switch (node.tagName.toLowerCase()) {
-                    case 'b':
-                        obj.bold = true;
-                        break;
-                    case 'i':
-                        obj.italic = true;
-                        break;
-                    case 'u':
-                        obj.underline = true;
-                        break;
-                    case 'strike':
-                        obj.strikethrough = true;
-                        break;
-                    case 'sup':
-                        obj.superscript = true;
-                        break;
-                    case 'sub':
-                        obj.subscript = true;
-                        break;
-                    case 'ol':
-                        obj.orderedlist = true;
-                        break;
-                    case 'ul':
-                        obj.underline = true;
-                        break;
-                    case 'blockquote':
-                        obj.blockquote = true;
-                        break;
-                }
-                if (node.tagName.toLowerCase() == 'b') {
-                    obj.bold = true;
-                }
-                if (node && node.parentNode) {
-                    node = node.parentNode;
-                }
-            } while (node.className != 'ngx-editor-textarea');
+            if (node && node.tagName) {
+                do {
+                    switch (node.tagName.toLowerCase()) {
+                        case 'b':
+                            obj.bold = true;
+                            break;
+                        case 'i':
+                            obj.italic = true;
+                            break;
+                        case 'u':
+                            obj.underline = true;
+                            break;
+                        case 'strike':
+                            obj.strikethrough = true;
+                            break;
+                        case 'sup':
+                            obj.superscript = true;
+                            break;
+                        case 'sub':
+                            obj.subscript = true;
+                            break;
+                        case 'ol':
+                            obj.orderedlist = true;
+                            break;
+                        case 'ul':
+                            obj.underline = true;
+                            break;
+                        case 'blockquote':
+                            obj.blockquote = true;
+                            break;
+                    }
+                    if (node && node.parentNode) {
+                        node = node.parentNode;
+                    }
+                } while (node.className != 'ngx-editor-textarea');
+            }
             return obj;
         }
     }
@@ -993,7 +992,7 @@ NgxEditorComponent.decorators = [
   <div class="ngx-wrapper" #ngxWrapper>
     <div class="ngx-editor-textarea" [attr.contenteditable]="config['editable']" (input)="onContentChange($event.target.innerHTML)"
       [attr.translate]="config['translate']" [attr.spellcheck]="config['spellcheck']" [style.height]="config['height']" [style.minHeight]="config['minHeight']"
-      [style.resize]="Utils?.canResize(resizer)" (focus)="onTextAreaFocus()" (blur)="onTextAreaBlur()" #ngxTextArea (keyup)="onSelectionChange()"></div>
+      [style.resize]="Utils?.canResize(resizer)" (focus)="onTextAreaFocus()" (blur)="onTextAreaBlur()" #ngxTextArea (click)="onSelectionChange()" (keyup)="onSelectionChange()"></div>
     <span class="ngx-editor-placeholder">{{ placeholder || config['placeholder'] }}</span>
   </div>
 </div>

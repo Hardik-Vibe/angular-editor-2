@@ -82,48 +82,47 @@ function checkFormatting(selection) {
         strikethrough: false
     };
     if (selection && selection.focusNode) {
-        if (selection.focusNode.parentNode && selection.focusNode.parentNode.className == 'ngx-editor-textarea') {
+        if (selection.focusNode.className == 'ngx-editor-textarea' || (selection.focusNode.parentNode && selection.focusNode.parentNode.className == 'ngx-editor-textarea')) {
             return obj;
         }
         else {
             var node = selection.focusNode.parentNode;
-            do {
-                switch (node.tagName.toLowerCase()) {
-                    case 'b':
-                        obj.bold = true;
-                        break;
-                    case 'i':
-                        obj.italic = true;
-                        break;
-                    case 'u':
-                        obj.underline = true;
-                        break;
-                    case 'strike':
-                        obj.strikethrough = true;
-                        break;
-                    case 'sup':
-                        obj.superscript = true;
-                        break;
-                    case 'sub':
-                        obj.subscript = true;
-                        break;
-                    case 'ol':
-                        obj.orderedlist = true;
-                        break;
-                    case 'ul':
-                        obj.underline = true;
-                        break;
-                    case 'blockquote':
-                        obj.blockquote = true;
-                        break;
-                }
-                if (node.tagName.toLowerCase() == 'b') {
-                    obj.bold = true;
-                }
-                if (node && node.parentNode) {
-                    node = node.parentNode;
-                }
-            } while (node.className != 'ngx-editor-textarea');
+            if (node && node.tagName) {
+                do {
+                    switch (node.tagName.toLowerCase()) {
+                        case 'b':
+                            obj.bold = true;
+                            break;
+                        case 'i':
+                            obj.italic = true;
+                            break;
+                        case 'u':
+                            obj.underline = true;
+                            break;
+                        case 'strike':
+                            obj.strikethrough = true;
+                            break;
+                        case 'sup':
+                            obj.superscript = true;
+                            break;
+                        case 'sub':
+                            obj.subscript = true;
+                            break;
+                        case 'ol':
+                            obj.orderedlist = true;
+                            break;
+                        case 'ul':
+                            obj.underline = true;
+                            break;
+                        case 'blockquote':
+                            obj.blockquote = true;
+                            break;
+                    }
+                    if (node && node.parentNode) {
+                        node = node.parentNode;
+                    }
+                } while (node.className != 'ngx-editor-textarea');
+            }
             return obj;
         }
     }
@@ -719,7 +718,7 @@ var NgxEditorComponent =               (function () {
 NgxEditorComponent.decorators = [
     { type: core.Component, args: [{
                 selector: 'app-ngx-editor',
-                template: "<div class=\"ngx-editor\" id=\"ngxEditor\" [style.width]=\"config['width']\" [style.minWidth]=\"config['minWidth']\" tabindex=\"0\"\n  (focus)=\"onEditorFocus()\">\n  <app-ngx-editor-toolbar #ngxToolbar [config]=\"config\" (execute)=\"executeCommand($event)\"></app-ngx-editor-toolbar>\n  <!-- text area -->\n  <div class=\"ngx-wrapper\" #ngxWrapper>\n    <div class=\"ngx-editor-textarea\" [attr.contenteditable]=\"config['editable']\" (input)=\"onContentChange($event.target.innerHTML)\"\n      [attr.translate]=\"config['translate']\" [attr.spellcheck]=\"config['spellcheck']\" [style.height]=\"config['height']\" [style.minHeight]=\"config['minHeight']\"\n      [style.resize]=\"Utils?.canResize(resizer)\" (focus)=\"onTextAreaFocus()\" (blur)=\"onTextAreaBlur()\" #ngxTextArea (keyup)=\"onSelectionChange()\"></div>\n    <span class=\"ngx-editor-placeholder\">{{ placeholder || config['placeholder'] }}</span>\n  </div>\n</div>\n",
+                template: "<div class=\"ngx-editor\" id=\"ngxEditor\" [style.width]=\"config['width']\" [style.minWidth]=\"config['minWidth']\" tabindex=\"0\"\n  (focus)=\"onEditorFocus()\">\n  <app-ngx-editor-toolbar #ngxToolbar [config]=\"config\" (execute)=\"executeCommand($event)\"></app-ngx-editor-toolbar>\n  <!-- text area -->\n  <div class=\"ngx-wrapper\" #ngxWrapper>\n    <div class=\"ngx-editor-textarea\" [attr.contenteditable]=\"config['editable']\" (input)=\"onContentChange($event.target.innerHTML)\"\n      [attr.translate]=\"config['translate']\" [attr.spellcheck]=\"config['spellcheck']\" [style.height]=\"config['height']\" [style.minHeight]=\"config['minHeight']\"\n      [style.resize]=\"Utils?.canResize(resizer)\" (focus)=\"onTextAreaFocus()\" (blur)=\"onTextAreaBlur()\" #ngxTextArea (click)=\"onSelectionChange()\" (keyup)=\"onSelectionChange()\"></div>\n    <span class=\"ngx-editor-placeholder\">{{ placeholder || config['placeholder'] }}</span>\n  </div>\n</div>\n",
                 styles: [".ngx-editor{position:relative}.ngx-editor ::ng-deep [contenteditable=true]:empty:before{content:normal;display:block;color:#868e96;opacity:1}.ngx-editor .ngx-wrapper{position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea{min-height:5rem;padding:.5rem .8rem 1rem;border:1px solid #ddd;background-color:transparent;overflow-x:hidden;overflow-y:auto;z-index:2;position:relative}.ngx-editor .ngx-wrapper .ngx-editor-textarea.focus,.ngx-editor .ngx-wrapper .ngx-editor-textarea:focus{outline:0}.ngx-editor .ngx-wrapper .ngx-editor-textarea ::ng-deep blockquote{margin-left:1rem;border-left:.2em solid #dfe2e5;padding-left:.5rem}.ngx-editor .ngx-wrapper ::ng-deep p{margin-bottom:0}.ngx-editor .ngx-wrapper .ngx-editor-placeholder{display:none;position:absolute;top:0;padding:.5rem .8rem 1rem .9rem;z-index:1;color:#6c757d;opacity:1}.ngx-editor .ngx-wrapper.show-placeholder .ngx-editor-placeholder{display:block}"],
                 providers: [
                     {
