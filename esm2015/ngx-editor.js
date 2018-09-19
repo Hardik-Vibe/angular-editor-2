@@ -992,7 +992,7 @@ NgxEditorComponent.decorators = [
   <div class="ngx-wrapper" #ngxWrapper>
     <div class="ngx-editor-textarea" [attr.contenteditable]="config['editable']" (input)="onContentChange($event.target.innerHTML)"
       [attr.translate]="config['translate']" [attr.spellcheck]="config['spellcheck']" [style.height]="config['height']" [style.minHeight]="config['minHeight']"
-      [style.resize]="Utils?.canResize(resizer)" (focus)="onTextAreaFocus()" (blur)="onTextAreaBlur()" #ngxTextArea></div>
+      [style.resize]="Utils?.canResize(resizer)" (focus)="onTextAreaFocus()" (blur)="onTextAreaBlur()" #ngxTextArea (click)="onSelectionChange()" (keyup)="onSelectionChange()"></div>
     <span class="ngx-editor-placeholder">{{ placeholder || config['placeholder'] }}</span>
   </div>
 </div>
